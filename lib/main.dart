@@ -208,8 +208,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    // Aqui você pode carregar a URL salva se quiser
-    // _urlController.text = 'https://sua-api.com.br';
+    // carregar a URL salva se quiser (opcional)
+    // _urlController.text = 'www.lealsistemas.com';
   }
 
   @override
@@ -224,7 +224,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _isLoading = true;
       });
 
-      // Simulando o salvamento (substitua por sua lógica real)
+      // Simulando o salvamento (substituir por lógica real)
       await Future.delayed(const Duration(seconds: 1));
 
       // Mostra feedback para o usuário
