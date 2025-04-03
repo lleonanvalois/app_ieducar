@@ -237,11 +237,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _isLoading = true;
       });
 
-      // Simulando o salvamento
       await Future.delayed(const Duration(seconds: 1));
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Configurações salvas com sucesso!')),
+        const SnackBar(
+          content: Text('Configurações salvas com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
       );
 
       setState(() {
@@ -255,7 +257,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Configurações')),
+      appBar: AppBar(
+        title: const Text(
+          'Configurações',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.blue, // Fundo azul
+        iconTheme: const IconThemeData(color: Colors.white), // Ícones brancos
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -267,8 +276,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 decoration: const InputDecoration(
                   labelText: 'URL Base',
                   hintText: 'Ex: www.lealsistemas.com',
-                  prefixIcon: Icon(Icons.link),
+                  prefixIcon: Icon(Icons.link, color: Colors.blue),
                   border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue),
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -279,7 +291,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }
                   return null;
                 },
-                keyboardType: TextInputType.url,
               ),
               const SizedBox(height: 20),
               SizedBox(
@@ -287,7 +298,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _saveSettings,
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue, // Botão azul
+                    foregroundColor: Colors.white, // Texto branco
                     padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                   child:
                       _isLoading
@@ -295,7 +311,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             strokeWidth: 2,
                             color: Colors.white,
                           )
-                          : const Text('SALVAR'),
+                          : const Text(
+                            'SALVAR',
+                            style: TextStyle(fontSize: 16),
+                          ),
                 ),
               ),
             ],
