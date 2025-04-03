@@ -1,6 +1,6 @@
 name: app_ieducar
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: 'https://github.com/lleonanvalois/app_ieducar/'
 version: 0.1.0
 
 environment:
