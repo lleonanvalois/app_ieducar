@@ -9,6 +9,19 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_native_splash: ^2.4.5
+
+flutter_native_splash: 
+  android: true
+  ios: true
+  color: "#FFFFFF"
+  image: "assets/images/lealsis.png"
+  
+
+  android_12: 
+    color: "#FFFFFF"
+    image: "assets/images/lealsis.png"
+
 
 dev_dependencies:
   flutter_test:
@@ -19,3 +32,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/2-PNG-2---LOGO-PMA-2025---2028---NOVA-LOGO.png
+    - assets/images/lealsis.png
+
