@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
+
 import 'package:flutter/material.dart';
 import 'package:app_ieducar/database/db.dart';
 
@@ -306,15 +308,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-// Tela Home
+// tela home
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  void _pontos() {
+    //futuro método para navegar até a tela de login
+  }
+  void _sincronizar() {
+    //Futuro método de sincronização com o banco
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('iEducar - Painel')),
-      body: const Center(child: Text("Bem-vindo ao sistema!")),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FloatingActionButton(
+                heroTag: 'sync',
+                onPressed: _sincronizar,
+                mini: true,
+                backgroundColor: Colors.white,
+                child: const Icon(Icons.sync, color: Colors.blue),
+              ),
+              const SizedBox(height: 12),
+              FloatingActionButton(
+                heroTag: 'location',
+                onPressed: _pontos,
+                mini: true,
+                backgroundColor: Colors.white,
+                child: const Icon(Icons.location_on, color: Colors.red),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
