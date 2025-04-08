@@ -25,8 +25,8 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE usuarios(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,  // Nome de usuário único
-        password TEXT         // Senha
+        username TEXT UNIQUE,  
+        password TEXT         
       )
     ''');
   }

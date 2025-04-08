@@ -1,9 +1,13 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
-
 import 'package:flutter/material.dart';
 import 'package:app_ieducar/database/db.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final db = DatabaseHelper();
+  final user = await db.getUser('admin');
+  if (user == null) {
+    await db.insertUser('admin', '123456');
+  }
   runApp(const MyApp());
 }
 
@@ -59,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Usuário ou senha incorretos')),
+          const SnackBar(content: Text('Usuário ou senha invalidos')),
         );
       }
     }
@@ -258,49 +262,60 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Configurações')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _urlController,
-                decoration: const InputDecoration(
-                  labelText: 'URL Base',
-                  hintText: 'Ex: www.lealsistemas.com',
-                  prefixIcon: Icon(Icons.link),
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor, insira a URL base';
-                  }
-                  if (!Uri.tryParse(value)!.hasAbsolutePath) {
-                    return 'Por favor, insira uma URL válida';
-                  }
-                  return null;
-                },
-                keyboardType: TextInputType.url,
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _saveSettings,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color.fromARGB(255, 18, 87, 167), Color(0xFF42A5F5)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _urlController,
+                  decoration: const InputDecoration(
+                    labelText: 'URL Base',
+                    hintText: 'Ex: www.lealsistemas.com',
+                    prefixIcon: Icon(Icons.link),
+                    border: OutlineInputBorder(),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
-                  child:
-                      _isLoading
-                          ? const CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          )
-                          : const Text('SALVAR'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, insira a URL base';
+                    }
+                    if (!Uri.tryParse(value)!.hasAbsolutePath) {
+                      return 'Por favor, insira uma URL válida';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.url,
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _saveSettings,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child:
+                        _isLoading
+                            ? const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            )
+                            : const Text('SALVAR'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -313,37 +328,65 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   void _pontos() {
-    //futuro método para navegar até a tela de login
+    // Navegar para outra tela ou abrir localização
   }
+
   void _sincronizar() {
-    //Futuro método de sincronização com o banco
+    // Ação de sincronização
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FloatingActionButton(
-                heroTag: 'sync',
-                onPressed: _sincronizar,
-                mini: true,
-                backgroundColor: Colors.white,
-                child: const Icon(Icons.sync, color: Colors.blue),
-              ),
-              const SizedBox(height: 12),
-              FloatingActionButton(
-                heroTag: 'location',
-                onPressed: _pontos,
-                mini: true,
-                backgroundColor: Colors.white,
-                child: const Icon(Icons.location_on, color: Colors.red),
-              ),
-            ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+        return false;
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color.fromARGB(255, 18, 87, 167), Color(0xFF42A5F5)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    FloatingActionButton.extended(
+                      heroTag: 'location',
+                      onPressed: _sincronizar,
+                      backgroundColor: Colors.white,
+                      label: const Text(
+                        'Pontos',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      icon: const Icon(Icons.location_on, color: Colors.red),
+                    ),
+                    const SizedBox(width: 20),
+                    FloatingActionButton.extended(
+                      heroTag: 'sync',
+                      onPressed: _pontos,
+                      backgroundColor: Colors.white,
+                      label: const Text(
+                        'Sync',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      icon: const Icon(Icons.sync, color: Colors.blue),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
