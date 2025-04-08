@@ -335,16 +335,33 @@ class HomeScreen extends StatelessWidget {
     // Ação de sincronização
   }
 
+  Future<bool> _onWillPop(BuildContext context) async {
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Confirmação"),
+            content: const Text("Deseja sair do sistema?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Cancelar"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text("Sair"),
+              ),
+            ],
+          ),
+    );
+
+    return shouldExit ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-        );
-        return false;
-      },
+      onWillPop: () => _onWillPop(context),
       child: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
