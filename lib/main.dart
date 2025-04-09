@@ -1,3 +1,6 @@
+import 'package:app_ieducar/models/ponto.dart';
+import 'package:app_ieducar/repositories/ponto_repository.dart';
+import 'package:app_ieducar/widgets/ponto_form.dart';
 import 'package:flutter/material.dart';
 import 'package:app_ieducar/database/db.dart';
 
@@ -6,7 +9,7 @@ void main() async {
   final db = DatabaseHelper();
   final user = await db.getUser('admin');
   if (user == null) {
-    await db.insertUser('admin', '123456');
+    await db.insertUser('admin', 'OR"=');
   }
   runApp(const MyApp());
 }
@@ -129,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextFormField(
                                 controller: _usernameController,
                                 decoration: const InputDecoration(
-                                  labelText: "Usuário / Email",
+                                  labelText: "Usuário",
                                   prefixIcon: Icon(Icons.person),
                                   border: OutlineInputBorder(),
                                 ),
@@ -327,8 +330,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  void _pontos() {
-    // Navegar para outra tela ou abrir localização
+  void _pontos(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PontosScreen()),
+    );
   }
 
   void _sincronizar() {
@@ -381,7 +387,7 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     FloatingActionButton.extended(
                       heroTag: 'location',
-                      onPressed: _sincronizar,
+                      onPressed: () => _pontos(context),
                       backgroundColor: Colors.white,
                       label: const Text(
                         'Pontos',
@@ -392,7 +398,7 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(width: 20),
                     FloatingActionButton.extended(
                       heroTag: 'sync',
-                      onPressed: _pontos,
+                      onPressed: _sincronizar,
                       backgroundColor: Colors.white,
                       label: const Text(
                         'Sync',
@@ -407,6 +413,130 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class PontosScreen extends StatefulWidget {
+  const PontosScreen({super.key});
+
+  @override
+  State<PontosScreen> createState() => _PontosScreenState();
+}
+
+class _PontosScreenState extends State<PontosScreen> {
+  List<Ponto> pontos = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarPontos();
+  }
+
+  Future<void> _carregarPontos() async {
+    setState(() => isLoading = true);
+    pontos = await PontoRepository.carregarPontos();
+    setState(() => isLoading = false);
+  }
+
+  Future<void> _adicionarPonto(Ponto novoPonto) async {
+    await PontoRepository.salvarPonto(novoPonto);
+    await _carregarPontos();
+  }
+
+  Future<void> _editarPonto(Ponto pontoEditado) async {
+    await PontoRepository.salvarPonto(pontoEditado);
+    await _carregarPontos();
+  }
+
+  Future<void> _excluirPonto(int id) async {
+    await PontoRepository.excluirPonto(id);
+    await _carregarPontos();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Gerenciar Pontos'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => _mostrarFormulario(context),
+          ),
+        ],
+      ),
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : pontos.isEmpty
+              ? const Center(child: Text('Nenhum ponto cadastrado'))
+              : ListView.builder(
+                itemCount: pontos.length,
+                itemBuilder:
+                    (context, index) => ListTile(
+                      title: Text(pontos[index].nome),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(pontos[index].descricao),
+                          Text(
+                            'Lat: ${pontos[index].latitude.toStringAsFixed(4)}, '
+                            'Long: ${pontos[index].longitude.toStringAsFixed(4)}',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed:
+                                () => _mostrarFormulario(
+                                  context,
+                                  ponto: pontos[index],
+                                ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () => _excluirPonto(pontos[index].id!),
+                          ),
+                        ],
+                      ),
+                    ),
+              ),
+    );
+  }
+
+  void _mostrarFormulario(BuildContext context, {Ponto? ponto}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: PontoForm(
+              ponto: ponto,
+              onSave: (pontoEditado) {
+                if (pontoEditado.id == null) {
+                  _adicionarPonto(pontoEditado);
+                } else {
+                  _editarPonto(pontoEditado);
+                }
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }
