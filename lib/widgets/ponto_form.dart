@@ -24,7 +24,15 @@ class _PontoFormState extends State<PontoForm> {
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+
+    if (widget.ponto != null) {
+      _nomeController.text = widget.ponto!.nome;
+      _descricaoController.text = widget.ponto!.descricao;
+      _latController.text = widget.ponto!.latitude.toStringAsFixed(4);
+      _longController.text = widget.ponto!.longitude.toStringAsFixed(4);
+    } else {
+      _getCurrentLocation();
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -114,18 +122,45 @@ class _PontoFormState extends State<PontoForm> {
                         ? const CircularProgressIndicator(strokeWidth: 2)
                         : const Icon(Icons.location_on),
                 label: Text(
-                  _isGettingLocation
-                      ? 'Capturando...'
-                      : 'Capturar Localização Atual',
+                  _isGettingLocation ? 'Capturando...' : 'Localização Atual',
                 ),
                 onPressed: _isGettingLocation ? null : _getCurrentLocation,
               ),
 
               const SizedBox(height: 20),
 
-              ElevatedButton(
-                onPressed: _salvar,
-                child: const Text('Salvar Ponto'),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _salvar,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.black,
+                          ),
+                          child: const Text('Salvar'),
+                        ),
+                      ),
+
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.black,
+                          ),
+
+                          child: const Text("Cancelar"),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),

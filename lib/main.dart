@@ -555,8 +555,15 @@ class _PontosScreenState extends State<PontosScreen> {
               ? const Center(child: CircularProgressIndicator())
               : pontos.isEmpty
               ? const Center(child: Text('Nenhum ponto cadastrado'))
-              : ListView.builder(
+              : ListView.separated(
                 itemCount: pontos.length,
+                separatorBuilder:
+                    (context, index) => const Divider(
+                      color: Colors.grey,
+                      height: 1,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
                 itemBuilder:
                     (context, index) => ListTile(
                       title: Text(pontos[index].nome),
@@ -592,7 +599,38 @@ class _PontosScreenState extends State<PontosScreen> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete),
-                            onPressed: () => _excluirPonto(pontos[index].id!),
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder:
+                                    (context) => AlertDialog(
+                                      title: const Text("Confirmar exclusão"),
+                                      content: const Text(
+                                        "Deseja realmente excluir este ponto?",
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, false),
+                                          child: const Text("Cancelar"),
+                                        ),
+                                        TextButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, true),
+                                          child: const Text(
+                                            "Excluir",
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                              );
+                              if (confirm == true) {
+                                _excluirPonto(pontos[index].id!);
+                              }
+                            },
                           ),
                         ],
                       ),
