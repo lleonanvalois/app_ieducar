@@ -1,0 +1,43 @@
+name: app_ieducar
+description: "A new Flutter project."
+publish_to: 'https://github.com/lleonanvalois/app_ieducar/'
+version: 0.1.0
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_native_splash: ^2.4.5
+  sqflite: ^2.3.3
+  path_provider: ^2.1.1
+  path: ^1.8.3
+  geolocator: ^10.0.0
+  permission_handler: ^11.3.0
+  intl: ^0.18.1
+
+
+flutter_native_splash: 
+  android: true
+  ios: true
+  color: "#FFFFFF"
+  image: "assets/images/lealsis.png"
+  
+
+  android_12: 
+    color: "#FFFFFF"
+    image: "assets/images/lealsis.png"
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/2-PNG-2---LOGO-PMA-2025---2028---NOVA-LOGO.png
+    - assets/images/lealsis.png
+
