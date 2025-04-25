@@ -116,17 +116,17 @@ class _PontosScreenState extends State<PontosScreen> {
                                         TextButton(
                                           onPressed:
                                               () =>
-                                                  Navigator.pop(context, false),
-                                          child: const Text("Cancelar"),
-                                        ),
-                                        TextButton(
-                                          onPressed:
-                                              () =>
                                                   Navigator.pop(context, true),
                                           child: const Text(
                                             "Excluir",
                                             style: TextStyle(color: Colors.red),
                                           ),
+                                        ),
+                                        TextButton(
+                                          onPressed:
+                                              () =>
+                                                  Navigator.pop(context, false),
+                                          child: const Text("Cancelar"),
                                         ),
                                       ],
                                     ),
