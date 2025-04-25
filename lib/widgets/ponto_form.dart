@@ -137,18 +137,6 @@ class _PontoFormState extends State<PontoForm> {
                     children: [
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: _salvar,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.black,
-                          ),
-                          child: const Text('Salvar'),
-                        ),
-                      ),
-
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton(
                           onPressed: () => Navigator.pop(context),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
@@ -156,6 +144,19 @@ class _PontoFormState extends State<PontoForm> {
                           ),
 
                           child: const Text("Cancelar"),
+                        ),
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _salvar,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.black,
+                          ),
+                          child: const Text('Salvar'),
                         ),
                       ),
                     ],
