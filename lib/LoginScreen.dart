@@ -187,6 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: _openSettings,
         backgroundColor: Colors.white,

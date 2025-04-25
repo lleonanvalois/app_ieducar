@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:app_ieducar/globals.dart' as globals;
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -20,7 +21,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2, // Aumente a versão para incluir a nova tabela
+      version: 2, // Aumentar a versão para incluir a nova tabela
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -28,8 +29,7 @@ class DatabaseHelper {
 
   Future<void> _onCreate(Database db, int version) async {
     // Criação da tabela de usuários
-    await db.execute('''
-    CREATE TABLE TBL_usuario(
+    await db.execute('''CREATE TABLE ${globals.cTabUsuario}(
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       username TEXT UNIQUE,
       password TEXT
@@ -38,7 +38,7 @@ class DatabaseHelper {
 
     // Criação da tabela de pontos
     await db.execute('''
-    CREATE TABLE TBL_ponto(
+    CREATE TABLE ${globals.cTabPonto} (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       nome TEXT NOT NULL,
       descricao TEXT NOT NULL,
@@ -46,7 +46,7 @@ class DatabaseHelper {
       longitude REAL NOT NULL,
       data TEXT NOT NULL,
       usuario_id INTEGER,
-      FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+      FOREIGN KEY (usuario_id) REFERENCES ${globals.cTabUsuario}(id)
     )
   ''');
   }
@@ -54,7 +54,7 @@ class DatabaseHelper {
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await db.execute('''
-      CREATE TABLE TBL_ponto(
+      CREATE TABLE ${globals.cTabPonto}(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
         descricao TEXT NOT NULL,
@@ -62,7 +62,7 @@ class DatabaseHelper {
         longitude REAL NOT NULL,
         data TEXT NOT NULL,
         usuario_id INTEGER,
-        FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+        FOREIGN KEY (usuario_id) REFERENCES ${globals.cTabUsuario}(id)
       )
     ''');
     }
@@ -71,7 +71,7 @@ class DatabaseHelper {
   // Métodos para usuários
   Future<int> insertUser(String username, String password) async {
     final db = await database;
-    return await db.insert('usuarios', {
+    return await db.insert(globals.cTabUsuario, {
       'username': username,
       'password': password,
     }, conflictAlgorithm: ConflictAlgorithm.replace);
@@ -80,7 +80,7 @@ class DatabaseHelper {
   Future<Map<String, dynamic>?> getUser(String username) async {
     final db = await database;
     final results = await db.query(
-      'usuarios',
+      globals.cTabUsuario,
       where: 'username = ?',
       whereArgs: [username],
       limit: 1,
@@ -96,21 +96,26 @@ class DatabaseHelper {
   // Métodos para pontos
   Future<int> insertPonto(Map<String, dynamic> ponto) async {
     final db = await database;
-    return await db.insert('pontos', ponto);
+    return await db.insert(globals.cTabPonto, ponto);
   }
 
   Future<List<Map<String, dynamic>>> getPontos() async {
     final db = await database;
-    return await db.query('pontos');
+    return await db.query(globals.cTabPonto);
   }
 
   Future<int> updatePonto(int id, Map<String, dynamic> ponto) async {
     final db = await database;
-    return await db.update('pontos', ponto, where: 'id = ?', whereArgs: [id]);
+    return await db.update(
+      globals.cTabPonto,
+      ponto,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<int> deletePonto(int id) async {
     final db = await database;
-    return await db.delete('pontos', where: 'id = ?', whereArgs: [id]);
+    return await db.delete(globals.cTabPonto, where: 'id = ?', whereArgs: [id]);
   }
 }

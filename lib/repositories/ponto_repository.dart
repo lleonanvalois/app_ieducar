@@ -1,10 +1,11 @@
 import 'package:app_ieducar/database/db.dart';
 import 'package:app_ieducar/models/ponto.dart';
+import 'package:app_ieducar/globals.dart' as globals;
 
 class PontoRepository {
   static Future<List<Ponto>> carregarPontos() async {
     final db = await DatabaseHelper().database;
-    final List<Map<String, dynamic>> maps = await db.query('pontos');
+    final List<Map<String, dynamic>> maps = await db.query(globals.cTabPonto);
     return List.generate(maps.length, (i) {
       return Ponto.fromMap(maps[i]);
     });
@@ -13,10 +14,10 @@ class PontoRepository {
   static Future<void> salvarPonto(Ponto ponto) async {
     final db = await DatabaseHelper().database;
     if (ponto.id == null) {
-      await db.insert('pontos', ponto.toMap());
+      await db.insert(globals.cTabPonto, ponto.toMap());
     } else {
       await db.update(
-        'pontos',
+        globals.cTabPonto,
         ponto.toMap(),
         where: 'id = ?',
         whereArgs: [ponto.id],
@@ -26,6 +27,6 @@ class PontoRepository {
 
   static Future<void> excluirPonto(int id) async {
     final db = await DatabaseHelper().database;
-    await db.delete('pontos', where: 'id = ?', whereArgs: [id]);
+    await db.delete(globals.cTabPonto, where: 'id = ?', whereArgs: [id]);
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'PontoScreen.dart';
 
-// tela home
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 

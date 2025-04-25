@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:app_ieducar/database/db.dart';
 import 'LoginScreen.dart';
+import 'database/db.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
