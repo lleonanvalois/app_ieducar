@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'LoginScreen.dart';
 import 'database/db.dart';
 
@@ -9,7 +10,7 @@ void main() async {
   if (user == null) {
     await db.insertUser('admin', 'teste');
   }
-  runApp(const MyApp());
+  runApp(GetMaterialApp(home: LoginScreen()));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'iEducar-Login',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const LoginScreen(),
+      home: LoginScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

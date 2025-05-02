@@ -1,56 +1,18 @@
+import 'package:app_ieducar/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:app_ieducar/database/db.dart';
+import 'package:get/get.dart';
 import 'SettingsScreen.dart';
-import 'HomeScreen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginScreen extends StatelessWidget {
+  LoginScreen({super.key});
+  final AuthController authController = Get.put(AuthController());
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _isLoading = false;
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
-
-      final isValid = await DatabaseHelper().validateUser(
-        _usernameController.text,
-        _passwordController.text,
-      );
-
-      setState(() => _isLoading = false);
-      if (isValid) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Usuário ou senha invalidos')),
-        );
-      }
-    }
-  }
 
   void _openSettings() {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => const SettingsScreen()));
+    Get.to(() => SettingsScreen());
   }
 
   @override
@@ -119,60 +81,75 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                               ),
                               const SizedBox(height: 20),
-                              TextFormField(
-                                controller: _passwordController,
-                                obscureText: _obscurePassword,
-                                decoration: InputDecoration(
-                                  labelText: "Senha",
-                                  prefixIcon: const Icon(Icons.lock),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscurePassword
-                                          ? Icons.visibility_outlined
-                                          : Icons.visibility_off_outlined,
+                              Obx(
+                                () => TextFormField(
+                                  controller: _passwordController,
+                                  obscureText:
+                                      authController.obscurePassword.value,
+                                  decoration: InputDecoration(
+                                    labelText: "Senha",
+                                    prefix: const Icon(Icons.lock),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        authController.obscurePassword.value
+                                            ? Icons.visibility_outlined
+                                            : Icons.visibility_off_outlined,
+                                      ),
+                                      onPressed: () {
+                                        authController
+                                            .togglePasswordVisibility();
+                                      },
                                     ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscurePassword = !_obscurePassword;
-                                      });
-                                    },
+                                    border: const OutlineInputBorder(),
                                   ),
-                                  border: const OutlineInputBorder(),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Por favor, insira sua senha';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor, insira sua senha';
-                                  }
-                                  return null;
-                                },
                               ),
                               const SizedBox(height: 60),
-                              SizedBox(
-                                width: 200,
-                                child: ElevatedButton(
-                                  onPressed: _isLoading ? null : _login,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blueAccent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                              Obx(
+                                () => SizedBox(
+                                  width: 200,
+                                  child: ElevatedButton(
+                                    onPressed:
+                                        authController.isLoading.value
+                                            ? null
+                                            : () {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                authController.login(
+                                                  _usernameController.text,
+                                                  _passwordController.text,
+                                                );
+                                              }
+                                            },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.blueAccent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 15,
+                                      ),
                                     ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 15,
-                                    ),
-                                  ),
-                                  child:
-                                      _isLoading
-                                          ? const CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
-                                          )
-                                          : const Text(
-                                            "Entrar",
-                                            style: TextStyle(
-                                              fontSize: 18,
+                                    child:
+                                        authController.isLoading.value
+                                            ? const CircularProgressIndicator(
+                                              strokeWidth: 2,
                                               color: Colors.white,
+                                            )
+                                            : const Text(
+                                              "Entrar",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white,
+                                              ),
                                             ),
-                                          ),
+                                  ),
                                 ),
                               ),
                             ],

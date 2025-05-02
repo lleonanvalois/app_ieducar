@@ -49,6 +49,18 @@ class DatabaseHelper {
       FOREIGN KEY (usuario_id) REFERENCES ${globals.cTabUsuario}(id)
     )
   ''');
+    await db.execute('''
+    CREATE TABLE ${globals.cTabCoordenada}(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      descricao TEXT NOT NULL,
+      latitude REAL NOT NULL,
+      longitude REAL NOT NULL,
+      data TEXT NOT NULL,
+      usuario_id INTEGER,
+      FOREIGN KEY (usuario_id) REFERENCES ${globals.cTabUsuario}(id)
+    )
+  ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -117,5 +129,17 @@ class DatabaseHelper {
   Future<int> deletePonto(int id) async {
     final db = await database;
     return await db.delete(globals.cTabPonto, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> insertPontoRota(double latitude, double longitude) async {
+    final db = await database;
+    return await db.insert(globals.cTabCoordenada, {
+      'nome': 'Ponto Rota',
+      'descricao': 'Ponto de Rota',
+      'latitude': latitude,
+      'longitude': longitude,
+      'data': DateTime.now().toIso8601String(),
+      'usuario_id': 1, // ID do usuário logado
+    });
   }
 }
