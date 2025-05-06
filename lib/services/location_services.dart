@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:app_ieducar/database/db.dart';
+import 'package:app_ieducar/models/coordenada.dart';
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
@@ -73,4 +75,20 @@ class LocationService {
   }
 
   Position? get lastPosition => _lastPosition;
+
+  Future<void> _savedLocation(Position position) async {
+    try {
+      await DatabaseHelper().insertPontoRota(
+        position.latitude,
+        position.longitude,
+      );
+    } catch (e) {
+      print('Erro ao salvar localização: $e');
+    }
+  }
+
+  Future<List<Coordenada>> getCoordenadas() async {
+    final dados = await DatabaseHelper().getRotas();
+    return dados.map((c) => Coordenada.fromMap(c)).toList();
+  }
 }

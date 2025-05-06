@@ -21,7 +21,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 2, // Aumentar a versão para incluir a nova tabela
+      version: 4, // Aumentar a versão para incluir a nova tabela
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -30,51 +30,62 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     // Criação da tabela de usuários
     await db.execute('''CREATE TABLE ${globals.cTabUsuario}(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE,
-      password TEXT
-    )
-  ''');
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT
+      )
+    ''');
 
     // Criação da tabela de pontos
     await db.execute('''
-    CREATE TABLE ${globals.cTabPonto} (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT NOT NULL,
-      descricao TEXT NOT NULL,
-      latitude REAL NOT NULL,
-      longitude REAL NOT NULL,
-      data TEXT NOT NULL,
-      usuario_id INTEGER,
-      FOREIGN KEY (usuario_id) REFERENCES ${globals.cTabUsuario}(id)
-    )
-  ''');
+      CREATE TABLE ${globals.cTabPonto} (
+       id_ponto INTEGER PRIMARY KEY AUTOINCREMENT,
+       no_ponto TEXT NOT NULL,
+       ds_ponto TEXT NOT NULL,
+       nu_latitude REAL NOT NULL,
+       nu_longitude REAL NOT NULL,
+       dh_ponto TEXT NOT NULL,
+       id_usuario INTEGER,
+       FOREIGN KEY (id_usuario) REFERENCES ${globals.cTabUsuario}(id)
+      )
+    ''');
     await db.execute('''
-    CREATE TABLE ${globals.cTabCoordenada}(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT NOT NULL,
-      descricao TEXT NOT NULL,
-      latitude REAL NOT NULL,
-      longitude REAL NOT NULL,
-      data TEXT NOT NULL,
-      usuario_id INTEGER,
-      FOREIGN KEY (usuario_id) REFERENCES ${globals.cTabUsuario}(id)
-    )
-  ''');
+      CREATE TABLE ${globals.cTabCoordenada}(
+        id_coordenada INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_usuario INTEGER NOT NULL,
+        dh_coordenada TEXT NOT NULL, 
+        nu_latitude REAL NOT NULL,
+        nu_longitude REAL NOT NULL,
+        FOREIGN KEY (id_usuario) REFERENCES ${globals.cTabUsuario}(id)
+      )
+    ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await db.execute('''
-      CREATE TABLE ${globals.cTabPonto}(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome TEXT NOT NULL,
-        descricao TEXT NOT NULL,
-        latitude REAL NOT NULL,
-        longitude REAL NOT NULL,
-        data TEXT NOT NULL,
-        usuario_id INTEGER,
-        FOREIGN KEY (usuario_id) REFERENCES ${globals.cTabUsuario}(id)
+        CREATE TABLE ${globals.cTabPonto}(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          no_ponto TEXT NOT NULL,
+          ds_ponto TEXT NOT NULL,
+          nu_latitude REAL NOT NULL,
+          nu_longitude REAL NOT NULL,
+          dh_ponto TEXT NOT NULL,
+          id_usuario INTEGER,
+          FOREIGN KEY (usuario_id) REFERENCES ${globals.cTabUsuario}(id)
+        )
+      ''');
+    }
+    if (oldVersion < 3) {
+      await db.execute('DROP TABLE IF EXISTS ${globals.cTabCoordenada}');
+      await db.execute('''
+        CREATE TABLE ${globals.cTabCoordenada}(
+        id_coordenada INTEGER PRIMARY KEY AUTOINCREMENT,
+        id_usuario INTEGER NOT NULL,
+        dh_coordenada TEXT NOT NULL,
+        nu_latitude REAL NOT NULL,
+        nu_longitude REAL NOT NULL,
+        FOREIGN KEY (id_usuario) REFERENCES ${globals.cTabUsuario}(id)
       )
     ''');
     }
@@ -131,15 +142,23 @@ class DatabaseHelper {
     return await db.delete(globals.cTabPonto, where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<List<Map<String, dynamic>>> getRotas() async {
+    final db = await database;
+    return await db.query(
+      globals.cTabCoordenada,
+      where: 'id_usuario = ?',
+      whereArgs: [1],
+      orderBy: 'dh_coordenada ASC',
+    );
+  }
+
   Future<int> insertPontoRota(double latitude, double longitude) async {
     final db = await database;
     return await db.insert(globals.cTabCoordenada, {
-      'nome': 'Ponto Rota',
-      'descricao': 'Ponto de Rota',
-      'latitude': latitude,
-      'longitude': longitude,
-      'data': DateTime.now().toIso8601String(),
-      'usuario_id': 1, // ID do usuário logado
+      'nu_latitude': latitude,
+      'nu_longitude': longitude,
+      'dh_coordenada': DateTime.now().millisecondsSinceEpoch,
+      'id_usuario': 1,
     });
   }
 }

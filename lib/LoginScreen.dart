@@ -88,7 +88,7 @@ class LoginScreen extends StatelessWidget {
                                       authController.obscurePassword.value,
                                   decoration: InputDecoration(
                                     labelText: "Senha",
-                                    prefix: const Icon(Icons.lock),
+                                    prefixIcon: Icon(Icons.lock),
                                     suffixIcon: IconButton(
                                       icon: Icon(
                                         authController.obscurePassword.value

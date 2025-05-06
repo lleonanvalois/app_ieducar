@@ -17,6 +17,8 @@ dependencies:
   permission_handler: ^11.3.0
   intl: ^0.18.1
   get: ^4.6.5
+  google_maps_flutter: ^2.2.3
+  flutter_polyline_points: ^1.0.0
 
 
 flutter_native_splash: 

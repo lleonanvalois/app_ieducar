@@ -26,10 +26,10 @@ class _PontoFormState extends State<PontoForm> {
     super.initState();
 
     if (widget.ponto != null) {
-      _nomeController.text = widget.ponto!.nome;
-      _descricaoController.text = widget.ponto!.descricao;
-      _latController.text = widget.ponto!.latitude.toStringAsFixed(4);
-      _longController.text = widget.ponto!.longitude.toStringAsFixed(4);
+      _nomeController.text = widget.ponto!.noPonto;
+      _descricaoController.text = widget.ponto!.dsPonto;
+      _latController.text = widget.ponto!.nuLatitude.toStringAsFixed(4);
+      _longController.text = widget.ponto!.nuLongitude.toStringAsFixed(4);
     } else {
       _getCurrentLocation();
     }
@@ -191,11 +191,11 @@ class _PontoFormState extends State<PontoForm> {
     if (_formKey.currentState!.validate()) {
       final novoPonto = Ponto(
         id: widget.ponto?.id,
-        nome: _nomeController.text,
-        descricao: _descricaoController.text,
-        latitude: double.parse(_latController.text),
-        longitude: double.parse(_longController.text),
-        data: widget.ponto?.data ?? DateTime.now(),
+        noPonto: _nomeController.text,
+        dsPonto: _descricaoController.text,
+        nuLatitude: double.parse(_latController.text),
+        nuLongitude: double.parse(_longController.text),
+        dhPonto: DateTime.now().toIso8601String(),
       );
       widget.onSave(novoPonto);
       Navigator.pop(context);

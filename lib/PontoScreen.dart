@@ -2,6 +2,8 @@ import 'package:app_ieducar/models/ponto.dart';
 import 'package:app_ieducar/repositories/ponto_repository.dart';
 import 'package:app_ieducar/widgets/ponto_form.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 
 class PontosScreen extends StatefulWidget {
@@ -52,6 +54,10 @@ class _PontosScreenState extends State<PontosScreen> {
             icon: const Icon(Icons.add),
             onPressed: () => _mostrarFormulario(context),
           ),
+          ElevatedButton(
+            onPressed: () => Get.toNamed('/mapa'),
+            child: const Text('Ver Rotas'),
+          ),
         ],
       ),
       body:
@@ -70,18 +76,18 @@ class _PontosScreenState extends State<PontosScreen> {
                     ),
                 itemBuilder:
                     (context, index) => ListTile(
-                      title: Text(pontos[index].nome),
+                      title: Text(pontos[index].noPonto),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(pontos[index].descricao),
+                          Text(pontos[index].dsPonto),
                           Text(
-                            'Lat: ${pontos[index].latitude.toStringAsFixed(4)}, '
-                            'Long: ${pontos[index].longitude.toStringAsFixed(4)}',
+                            'Lat: ${pontos[index].nuLatitude.toStringAsFixed(4)}, '
+                            'Long: ${pontos[index].nuLongitude.toStringAsFixed(4)}',
                             style: const TextStyle(fontSize: 12),
                           ),
                           Text(
-                            'Data: ${DateFormat('dd/MM/yyyy HH:mm').format(pontos[index].data)}',
+                            'Data: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(pontos[index].dhPonto))}',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,

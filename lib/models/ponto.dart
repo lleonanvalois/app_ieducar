@@ -1,39 +1,40 @@
 class Ponto {
   final int? id;
-  final String nome;
-  final String descricao;
-  final double latitude;
-  final double longitude;
-  final DateTime data;
+  final String noPonto; // Nome do ponto
+  final String dsPonto; // Descrição
+  final double nuLatitude;
+  final double nuLongitude;
+  final String dhPonto; // Data/hora
 
   Ponto({
     this.id,
-    required this.nome,
-    required this.descricao,
-    required this.latitude,
-    required this.longitude,
-    required this.data,
+    required this.noPonto,
+    required this.dsPonto,
+    required this.nuLatitude,
+    required this.nuLongitude,
+    required this.dhPonto,
   });
 
+  // Mapeamento CORRETO para o banco de dados
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'nome': nome,
-      'descricao': descricao,
-      'latitude': latitude,
-      'longitude': longitude,
-      'data': data.toIso8601String(),
+      'id_ponto': id,
+      'no_ponto': noPonto,
+      'ds_ponto': dsPonto,
+      'nu_latitude': nuLatitude,
+      'nu_longitude': nuLongitude,
+      'dh_ponto': dhPonto,
     };
   }
 
   factory Ponto.fromMap(Map<String, dynamic> map) {
     return Ponto(
-      id: map['id'],
-      nome: map['nome'],
-      descricao: map['descricao'],
-      latitude: map['latitude'],
-      longitude: map['longitude'],
-      data: DateTime.parse(map['data']),
+      id: map['id_ponto'],
+      noPonto: map['no_ponto'],
+      dsPonto: map['ds_ponto'],
+      nuLatitude: map['nu_latitude'],
+      nuLongitude: map['nu_longitude'],
+      dhPonto: map['dh_ponto'],
     );
   }
 }
