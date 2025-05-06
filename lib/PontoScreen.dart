@@ -54,10 +54,6 @@ class _PontosScreenState extends State<PontosScreen> {
             icon: const Icon(Icons.add),
             onPressed: () => _mostrarFormulario(context),
           ),
-          ElevatedButton(
-            onPressed: () => Get.toNamed('/mapa'),
-            child: const Text('Ver Rotas'),
-          ),
         ],
       ),
       body:
@@ -99,6 +95,10 @@ class _PontosScreenState extends State<PontosScreen> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          IconButton(
+                            icon: const Icon(Icons.map),
+                            onPressed: () => _mostrarNoMapa(pontos[index]),
+                          ),
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed:
@@ -175,6 +175,17 @@ class _PontosScreenState extends State<PontosScreen> {
             ),
           ),
         );
+      },
+    );
+  }
+
+  void _mostrarNoMapa(Ponto ponto) {
+    Get.toNamed(
+      '/mapa',
+      arguments: {
+        'latitude': ponto.nuLatitude,
+        'longitude': ponto.nuLongitude,
+        'title': ponto.noPonto,
       },
     );
   }

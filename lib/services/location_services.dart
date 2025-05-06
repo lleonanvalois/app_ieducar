@@ -34,7 +34,8 @@ class LocationService {
   Future<void> getLocationUpdates({
     required Function(Position) onLocationUpdate,
     int distanceFilter = 10,
-    Duration? timeInterval,
+    Duration? timeInterval = const Duration(seconds: 10),
+    required Function(Position) onLocationSaved,
     LocationAccuracy accuracy = LocationAccuracy.high,
   }) async {
     await getCurrentLocation();

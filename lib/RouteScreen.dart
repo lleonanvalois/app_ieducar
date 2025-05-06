@@ -10,7 +10,7 @@ class RouteScreen extends GetView<MapController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Minhas Rotas'),
+        title: const Text('Mapa'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -22,20 +22,40 @@ class RouteScreen extends GetView<MapController> {
         () => Stack(
           children: [
             GoogleMap(
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(-23.5505, -46.6333),
+              initialCameraPosition: CameraPosition(
+                target:
+                    controller.coordenadas.isNotEmpty
+                        ? LatLng(
+                          controller.coordenadas.first.latitude,
+                          controller.coordenadas.first.longitude,
+                        )
+                        : const LatLng(-23.5505, -46.6333),
                 zoom: 12,
               ),
               polylines: controller.polylines,
               markers: controller.markers,
-              onMapCreated:
-                  (controller) => this.controller.mapController = controller,
+              onMapCreated: (GoogleMapController googleMapController) {
+                controller.mapController = googleMapController;
+
+                // Acessa os argumentos após a criação do mapa
+                final args = Get.arguments as Map<String, dynamic>?;
+
+                if (args != null &&
+                    args.containsKey('latitude') &&
+                    args.containsKey('longitude')) {
+                  final lat = args['latitude'] as double;
+                  final lng = args['longitude'] as double;
+                  final position = LatLng(lat, lng);
+                  controller.addMarker(position);
+                  controller.focusOnCoordinate(position);
+                }
+              },
               myLocationEnabled: true,
             ),
             if (controller.isLoading.value)
               const Center(child: CircularProgressIndicator()),
-            if (controller.coordenadas.isEmpty && !controller.isLoading.value)
-              const Center(child: Text('Nenhuma rota registrada')),
+            // if (controller.coordenadas.isEmpty && !controller.isLoading.value)
+            //   const Center(child: Text('Nenhuma rota registrada')),
           ],
         ),
       ),

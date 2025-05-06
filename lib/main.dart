@@ -1,3 +1,4 @@
+import 'package:app_ieducar/PontoScreen.dart';
 import 'package:app_ieducar/RouteScreen.dart';
 import 'package:app_ieducar/controllers/map_controller.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,15 @@ void main() async {
       home: LoginScreen(),
       getPages: [
         GetPage(name: '/login', page: () => LoginScreen()),
-        GetPage(name: '/mapa', page: () => RouteScreen()),
+        GetPage(
+          name: '/mapa',
+          page: () => RouteScreen(),
+          binding: BindingsBuilder(() {
+            Get.put(MapController());
+          }),
+        ),
+
+        GetPage(name: '/pontos', page: () => PontosScreen()),
       ],
     ),
   );

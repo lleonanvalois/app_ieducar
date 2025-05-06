@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'PontoScreen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -81,13 +82,23 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   _buildActionButton(
+                    icon: Icons.map,
+                    label: "Rotas",
+                    iconColor: Colors.white,
+                    textColor: Colors.white,
+                    onPressed: () => Get.toNamed('/mapa'),
+                  ),
+                  const SizedBox(width: 20),
+
+                  _buildActionButton(
                     icon: Icons.location_on,
                     label: "Pontos",
                     iconColor: Colors.red,
                     textColor: Colors.white,
-                    onPressed: () => _pontos(context),
+                    onPressed: () => Get.toNamed('/pontos'),
                   ),
                   const SizedBox(width: 20),
+
                   _buildActionButton(
                     icon: Icons.sync,
                     label: "Sync",

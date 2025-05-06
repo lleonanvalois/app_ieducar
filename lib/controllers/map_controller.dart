@@ -1,5 +1,6 @@
 import 'package:app_ieducar/database/db.dart';
 import 'package:app_ieducar/models/coordenada.dart';
+import 'package:app_ieducar/models/ponto.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,8 +14,21 @@ class MapController extends GetxController {
 
   @override
   void onInit() {
-    loadRoute();
     super.onInit();
+
+    final args = Get.arguments as Map<String, dynamic>?;
+
+    if (args != null &&
+        args.containsKey('latitude') &&
+        args.containsKey('longitude')) {
+      final lat = args['latitude'] as double;
+      final lng = args['longitude'] as double;
+      final position = LatLng(lat, lng);
+      addMarker(position);
+      focusOnCoordinate(position);
+    }
+
+    loadRoute();
   }
 
   Future<void> loadRoute() async {
@@ -96,6 +110,21 @@ class MapController extends GetxController {
     return LatLngBounds(
       southwest: LatLng(south ?? 0, west ?? 0),
       northeast: LatLng(north ?? 0, east ?? 0),
+    );
+  }
+
+  void focusOnCoordinate(LatLng position) {
+    mapController.animateCamera(CameraUpdate.newLatLngZoom(position, 16));
+  }
+
+  void addMarker(LatLng position, {String? title}) {
+    markers.add(
+      Marker(
+        markerId: MarkerId('selected_${DateTime.now().millisecondsSinceEpoch}'),
+        position: position,
+        infoWindow: InfoWindow(title: title ?? 'Localização Selecionada'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      ),
     );
   }
 

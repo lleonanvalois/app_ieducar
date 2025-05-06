@@ -20,6 +20,7 @@ class _PontoFormState extends State<PontoForm> {
   final _latController = TextEditingController();
   final _longController = TextEditingController();
   bool _isGettingLocation = false;
+  late FocusNode _nomefocusNode;
 
   @override
   void initState() {
@@ -33,6 +34,13 @@ class _PontoFormState extends State<PontoForm> {
     } else {
       _getCurrentLocation();
     }
+
+    _nomefocusNode = FocusNode();
+    Future.delayed(Duration(milliseconds: 100), () {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(_nomefocusNode);
+      }
+    });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -73,6 +81,8 @@ class _PontoFormState extends State<PontoForm> {
             children: [
               TextFormField(
                 controller: _nomeController,
+                focusNode: _nomefocusNode,
+
                 decoration: const InputDecoration(labelText: 'Nome do Ponto'),
                 validator:
                     (value) => value!.isEmpty ? 'Campo obrigatório' : null,
@@ -206,6 +216,7 @@ class _PontoFormState extends State<PontoForm> {
   void dispose() {
     _latController.dispose();
     _longController.dispose();
+    _nomefocusNode.dispose();
     super.dispose();
   }
 }
