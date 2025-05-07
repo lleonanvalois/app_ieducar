@@ -1,6 +1,5 @@
 import 'package:app_ieducar/database/db.dart';
 import 'package:app_ieducar/models/coordenada.dart';
-import 'package:app_ieducar/models/ponto.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -10,11 +9,13 @@ class MapController extends GetxController {
   final RxSet<Polyline> polylines = <Polyline>{}.obs;
   final RxSet<Marker> markers = <Marker>{}.obs;
   final RxBool isLoading = true.obs;
-  late GoogleMapController mapController;
+  GoogleMapController? mapController;
 
   @override
   void onInit() {
     super.onInit();
+    _processarArgumentos();
+    loadRoute();
 
     final args = Get.arguments as Map<String, dynamic>?;
 
@@ -27,8 +28,6 @@ class MapController extends GetxController {
       addMarker(position);
       focusOnCoordinate(position);
     }
-
-    loadRoute();
   }
 
   Future<void> loadRoute() async {
@@ -38,7 +37,7 @@ class MapController extends GetxController {
       coordenadas.assignAll(data.map((e) => Coordenada.fromMap(e)));
       _createRoute();
     } catch (e) {
-      Get.snackbar('Erro', 'Falha ao carregar as rotas: ${e.toString()}');
+      Get.snackbar('Erro', 'Falha ao carregar rotas: ${e.toString()}');
     } finally {
       isLoading.value = false;
     }
@@ -81,7 +80,7 @@ class MapController extends GetxController {
   void zoomToRoute() {
     if (coordenadas.isNotEmpty) {
       final bounds = _calculateBounds();
-      mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+      mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
     }
   }
 
@@ -114,7 +113,7 @@ class MapController extends GetxController {
   }
 
   void focusOnCoordinate(LatLng position) {
-    mapController.animateCamera(CameraUpdate.newLatLngZoom(position, 16));
+    mapController?.animateCamera(CameraUpdate.newLatLngZoom(position, 16));
   }
 
   void addMarker(LatLng position, {String? title}) {
@@ -128,9 +127,31 @@ class MapController extends GetxController {
     );
   }
 
+  void refreshMap() {
+    _createRoute();
+    update(); // Notifica os ouvintes do GetX
+  }
+
+  void _processarArgumentos() {
+    final args = Get.arguments as Map<String, dynamic>?;
+    if (args != null &&
+        args.containsKey('latitude') &&
+        args.containsKey('longitude')) {
+      final lat = args['latitude'] as double;
+      final lng = args['longitude'] as double;
+      final position = LatLng(lat, lng);
+      addMarker(position);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mapController != null) {
+          focusOnCoordinate(position);
+        }
+      });
+    }
+  }
+
   @override
   void onClose() {
-    mapController.dispose();
+    mapController?.dispose();
     super.onClose();
   }
 }

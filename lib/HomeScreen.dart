@@ -45,7 +45,6 @@ class HomeScreen extends StatelessWidget {
       onWillPop: () => _onWillPop(context),
       child: Scaffold(
         appBar: AppBar(
-          automaticallyImplyLeading: false, // Remove o botão de voltar
           title: const Text(
             'iEducar - Transporte',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

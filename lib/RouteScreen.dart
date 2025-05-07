@@ -9,15 +9,7 @@ class RouteScreen extends GetView<MapController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mapa'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: controller.loadRoute,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Mapa')),
       body: Obx(
         () => Stack(
           children: [
@@ -37,7 +29,6 @@ class RouteScreen extends GetView<MapController> {
               onMapCreated: (GoogleMapController googleMapController) {
                 controller.mapController = googleMapController;
 
-                // Acessa os argumentos após a criação do mapa
                 final args = Get.arguments as Map<String, dynamic>?;
 
                 if (args != null &&

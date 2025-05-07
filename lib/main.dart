@@ -13,7 +13,7 @@ void main() async {
   if (user == null) {
     await db.insertUser('admin', 'teste');
   }
-  Get.put(MapController());
+
   runApp(
     GetMaterialApp(
       home: LoginScreen(),
