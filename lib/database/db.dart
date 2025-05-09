@@ -132,14 +132,18 @@ class DatabaseHelper {
     return await db.update(
       globals.cTabPonto,
       ponto,
-      where: 'id = ?',
+      where: 'id_ponto = ?',
       whereArgs: [id],
     );
   }
 
   Future<int> deletePonto(int id) async {
     final db = await database;
-    return await db.delete(globals.cTabPonto, where: 'id = ?', whereArgs: [id]);
+    return await db.delete(
+      globals.cTabPonto,
+      where: 'id_ponto  = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<List<Map<String, dynamic>>> getRotas() async {
