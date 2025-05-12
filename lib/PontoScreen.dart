@@ -182,7 +182,11 @@ class _PontosScreenState extends State<PontosScreen> {
   void _mostrarNoMapa(Ponto ponto) {
     Get.toNamed(
       '/mapa',
-      arguments: {'latitude': ponto.nuLatitude, 'longitude': ponto.nuLongitude},
+      arguments: {
+        'editarPontoId': ponto.id,
+        'latitude': ponto.nuLatitude,
+        'longitude': ponto.nuLongitude,
+      },
     );
   }
 }
