@@ -9,9 +9,9 @@ import 'database/db.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final db = DatabaseHelper();
-  final user = await db.getUser('admin');
+  final user = await db.getUser('a');
   if (user == null) {
-    await db.insertUser('admin', 'teste');
+    await db.insertUser('a', 'a');
   }
 
   runApp(

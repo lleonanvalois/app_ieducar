@@ -137,6 +137,18 @@ class DatabaseHelper {
     );
   }
 
+  //editar ponto no mapa
+
+  Future<int> updateCoordenada(int id, Map<String, dynamic> coordenada) async {
+    final db = await database;
+    return await db.update(
+      globals.cTabCoordenada,
+      coordenada,
+      where: 'id_coordenada = ?',
+      whereArgs: [id],
+    );
+  }
+
   Future<int> deletePonto(int id) async {
     final db = await database;
     return await db.delete(
