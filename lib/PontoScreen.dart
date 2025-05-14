@@ -3,46 +3,63 @@ import 'package:app_ieducar/repositories/ponto_repository.dart';
 import 'package:app_ieducar/widgets/ponto_form.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 
-class PontosScreen extends StatefulWidget {
-  const PontosScreen({super.key});
+// Crie um Controller para gerenciar o estado da tela de pontos
+class PontosController extends GetxController {
+  final RxList<Ponto> pontos = <Ponto>[].obs;
+  final RxBool isLoading = true.obs;
 
   @override
-  State<PontosScreen> createState() => _PontosScreenState();
+  void onInit() {
+    super.onInit();
+    carregarPontos();
+  }
+
+  Future<void> carregarPontos() async {
+    try {
+      isLoading.value = true;
+      final data = await PontoRepository.carregarPontos();
+      pontos.assignAll(data);
+    } catch (e) {
+      Get.snackbar('Erro', 'Falha ao carregar pontos: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> adicionarPonto(Ponto novoPonto) async {
+    try {
+      await PontoRepository.salvarPonto(novoPonto);
+      await carregarPontos();
+    } catch (e) {
+      Get.snackbar('Erro', 'Falha ao adicionar ponto: ${e.toString()}');
+    }
+  }
+
+  Future<void> editarPonto(Ponto pontoEditado) async {
+    try {
+      await PontoRepository.salvarPonto(pontoEditado);
+      await carregarPontos();
+    } catch (e) {
+      Get.snackbar('Erro', 'Falha ao editar ponto: ${e.toString()}');
+    }
+  }
+
+  Future<void> excluirPonto(int id) async {
+    try {
+      await PontoRepository.excluirPonto(id);
+      await carregarPontos();
+    } catch (e) {
+      Get.snackbar('Erro', 'Falha ao excluir ponto: ${e.toString()}');
+    }
+  }
 }
 
-class _PontosScreenState extends State<PontosScreen> {
-  List<Ponto> pontos = [];
-  bool isLoading = true;
+class PontosScreen extends StatelessWidget {
+  final PontosController pontosController = Get.put(PontosController());
 
-  @override
-  void initState() {
-    super.initState();
-    _carregarPontos();
-  }
-
-  Future<void> _carregarPontos() async {
-    setState(() => isLoading = true);
-    pontos = await PontoRepository.carregarPontos();
-    setState(() => isLoading = false);
-  }
-
-  Future<void> _adicionarPonto(Ponto novoPonto) async {
-    await PontoRepository.salvarPonto(novoPonto);
-    await _carregarPontos();
-  }
-
-  Future<void> _editarPonto(Ponto pontoEditado) async {
-    await PontoRepository.salvarPonto(pontoEditado);
-    await _carregarPontos();
-  }
-
-  Future<void> _excluirPonto(int id) async {
-    await PontoRepository.excluirPonto(id);
-    await _carregarPontos();
-  }
+  PontosScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,34 +73,36 @@ class _PontosScreenState extends State<PontosScreen> {
           ),
         ],
       ),
-      body:
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : pontos.isEmpty
-              ? const Center(child: Text('Nenhum ponto cadastrado'))
-              : ListView.separated(
-                itemCount: pontos.length,
-                separatorBuilder:
-                    (context, index) => const Divider(
-                      color: Colors.grey,
-                      height: 1,
-                      indent: 16,
-                      endIndent: 16,
-                    ),
-                itemBuilder:
-                    (context, index) => ListTile(
-                      title: Text(pontos[index].noPonto),
+      body: Obx(
+        () =>
+            pontosController.isLoading.value
+                ? const Center(child: CircularProgressIndicator())
+                : pontosController.pontos.isEmpty
+                ? const Center(child: Text('Nenhum ponto cadastrado'))
+                : ListView.separated(
+                  itemCount: pontosController.pontos.length,
+                  separatorBuilder:
+                      (context, index) => const Divider(
+                        color: Colors.grey,
+                        height: 1,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                  itemBuilder: (context, index) {
+                    final ponto = pontosController.pontos[index];
+                    return ListTile(
+                      title: Text(ponto.noPonto),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(pontos[index].dsPonto),
+                          Text(ponto.dsPonto),
                           Text(
-                            'Lat: ${pontos[index].nuLatitude.toStringAsFixed(4)}, '
-                            'Long: ${pontos[index].nuLongitude.toStringAsFixed(4)}',
+                            'Lat: ${ponto.nuLatitude.toStringAsFixed(4)}, '
+                            'Long: ${ponto.nuLongitude.toStringAsFixed(4)}',
                             style: const TextStyle(fontSize: 12),
                           ),
                           Text(
-                            'Data: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(pontos[index].dhPonto))}',
+                            'Data: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.parse(ponto.dhPonto))}',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -97,15 +116,12 @@ class _PontosScreenState extends State<PontosScreen> {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.map),
-                            onPressed: () => _mostrarNoMapa(pontos[index]),
+                            onPressed: () => _mostrarNoMapa(ponto),
                           ),
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed:
-                                () => _mostrarFormulario(
-                                  context,
-                                  ponto: pontos[index],
-                                ),
+                                () => _mostrarFormulario(context, ponto: ponto),
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete),
@@ -138,14 +154,16 @@ class _PontosScreenState extends State<PontosScreen> {
                                     ),
                               );
                               if (confirm == true) {
-                                _excluirPonto(pontos[index].id!);
+                                pontosController.excluirPonto(ponto.id!);
                               }
                             },
                           ),
                         ],
                       ),
-                    ),
-              ),
+                    );
+                  },
+                ),
+      ),
     );
   }
 
@@ -167,9 +185,9 @@ class _PontosScreenState extends State<PontosScreen> {
               ponto: ponto,
               onSave: (pontoEditado) {
                 if (pontoEditado.id == null) {
-                  _adicionarPonto(pontoEditado);
+                  pontosController.adicionarPonto(pontoEditado);
                 } else {
-                  _editarPonto(pontoEditado);
+                  pontosController.editarPonto(pontoEditado);
                 }
               },
             ),

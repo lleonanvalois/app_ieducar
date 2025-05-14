@@ -1,0 +1,58 @@
+// Arquivo: controllers/pontos_controller.dart
+import 'package:app_ieducar/models/ponto.dart';
+import 'package:app_ieducar/repositories/ponto_repository.dart'; // Importe seu repositório
+import 'package:get/get.dart';
+
+class PontosController extends GetxController {
+  // RxList para que a UI reaja automaticamente às mudanças
+  final RxList<Ponto> pontos = <Ponto>[].obs;
+  // RxBool para controlar o estado de carregamento
+  final RxBool isLoading = true.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    carregarPontos(); // Carrega os pontos quando o controller é inicializado
+  }
+
+  Future<void> carregarPontos() async {
+    try {
+      isLoading.value = true;
+      // Usa o PontoRepository para buscar os dados
+      final listaDePontos = await PontoRepository.carregarPontos();
+      pontos.assignAll(listaDePontos); // Atualiza a lista observável
+    } catch (e) {
+      Get.snackbar('Erro', 'Falha ao carregar pontos: ${e.toString()}');
+      // Considere um tratamento de erro mais robusto aqui
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> adicionarPonto(Ponto novoPonto) async {
+    try {
+      await PontoRepository.salvarPonto(novoPonto);
+      await carregarPontos(); // Recarrega a lista após adicionar
+    } catch (e) {
+      Get.snackbar('Erro', 'Falha ao adicionar ponto: ${e.toString()}');
+    }
+  }
+
+  Future<void> editarPonto(Ponto pontoEditado) async {
+    try {
+      await PontoRepository.salvarPonto(pontoEditado);
+      await carregarPontos(); // Recarrega a lista após editar
+    } catch (e) {
+      Get.snackbar('Erro', 'Falha ao editar ponto: ${e.toString()}');
+    }
+  }
+
+  Future<void> excluirPonto(int id) async {
+    try {
+      await PontoRepository.excluirPonto(id);
+      await carregarPontos(); // Recarrega a lista após excluir
+    } catch (e) {
+      Get.snackbar('Erro', 'Falha ao excluir ponto: ${e.toString()}');
+    }
+  }
+}

@@ -12,16 +12,16 @@ extension IterableExtension<T> on Iterable<T> {
 extension MarkerCopyWith on Marker {
   Marker copyWith({
     bool? draggableParam,
-    LatLng? position,
-    BitmapDescriptor? iconParam,
+    LatLng? positionParam,
+    BitmapDescriptor? iconParam, // Novo parâmetro para cor
     void Function()? onTapParam,
     void Function(LatLng)? onDragEndParam,
   }) {
     return Marker(
       markerId: markerId,
-      position: position ?? this.position,
+      position: positionParam ?? position,
       draggable: draggableParam ?? draggable,
-      icon: iconParam ?? icon,
+      icon: iconParam ?? icon, // Aplica nova cor
       onTap: onTapParam ?? onTap,
       onDragEnd: onDragEndParam ?? onDragEnd,
     );

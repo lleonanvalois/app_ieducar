@@ -8,7 +8,7 @@ class HomeScreen extends StatelessWidget {
   void _pontos(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PontosScreen()),
+      MaterialPageRoute(builder: (context) => PontosScreen()),
     );
   }
 
