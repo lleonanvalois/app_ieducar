@@ -54,44 +54,33 @@ class RouteScreen extends GetView<MapController> {
                 controller.mapController = googleMapController;
 
                 final args = Get.arguments as Map<String, dynamic>?;
-
-                if (args != null) {
-                  if (args.containsKey('editarPontoId')) {
-                    final markerId = args['editarPontoId'] as int;
-                    final lat = args['latitude'] as double;
-                    final lng = args['longitude'] as double;
-                    final position = LatLng(lat, lng);
-                    controller.addMarker(
-                      position,
-                      markerId: markerId.toString(),
-                    ); // Associa o ID ao marcador
-                    controller.focusOnCoordinate(position);
-                  }
-                  // Caso contrário, adiciona um novo marcador
-                  else if (args.containsKey('latitude') &&
-                      args.containsKey('longitude')) {
-                    final lat = args['latitude'] as double;
-                    final lng = args['longitude'] as double;
-                    final position = LatLng(lat, lng);
-                    controller.addMarker(
-                      position,
-                      markerId:
-                          DateTime.now().millisecondsSinceEpoch.toString(),
-                    );
-                    controller.focusOnCoordinate(position);
-                  }
+                if (args != null && args.containsKey('editarPontoId')) {
+                  final markerId = args['editarPontoId'] as int;
+                  final lat = args['latitude'] as double;
+                  final lng = args['longitude'] as double;
+                  final position = LatLng(lat, lng);
+                  controller.addMarker(position, markerId: 'ponto_$markerId');
+                  controller.focusOnCoordinate(position);
                 }
               },
+
               onTap:
                   controller.isEditing.value
-                      ? (position) => controller.addMarker(
-                        position,
-                        markerId:
-                            DateTime.now().millisecondsSinceEpoch.toString(),
-                      )
+                      ? (position) {
+                        // Remove marcadores temporários antes de adicionar
+                        controller.markers.removeWhere(
+                          (m) => m.markerId.value.startsWith('temp_ponto'),
+                        );
+                        controller.addMarker(
+                          position,
+                          markerId: 'temp_ponto', // ID fixo para rascunho
+                        );
+                      }
                       : null,
+
               myLocationEnabled: true,
             ),
+
             if (controller.isLoading.value)
               const Center(child: CircularProgressIndicator()),
             // if (controller.coordenadas.isEmpty && !controller.isLoading.value)
