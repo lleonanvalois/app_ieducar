@@ -64,20 +64,19 @@ class RouteScreen extends GetView<MapController> {
                 }
               },
 
-              onTap:
-                  controller.isEditing.value
-                      ? (position) {
-                        // Remove marcadores temporários antes de adicionar
-                        controller.markers.removeWhere(
-                          (m) => m.markerId.value.startsWith('temp_ponto'),
-                        );
-                        controller.addMarker(
-                          position,
-                          markerId: 'temp_ponto', // ID fixo para rascunho
-                        );
-                      }
-                      : null,
-
+              // onTap:
+              //     controller.isEditing.value
+              //         ? (position) {
+              //           // Remove marcadores temporários antes de adicionar
+              //           controller.markers.removeWhere(
+              //             (m) => m.markerId.value.startsWith('temp_ponto'),
+              //           );
+              //           controller.addMarker(
+              //             position,
+              //             markerId: 'temp_ponto', // ID fixo para rascunho
+              //           );
+              //         }
+              //         : null,
               myLocationEnabled: true,
             ),
 
