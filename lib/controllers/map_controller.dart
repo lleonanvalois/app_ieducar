@@ -31,8 +31,9 @@ class MapController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    await loadPontos();
+    // await loadPontos();  Será usado futuramente na tela de rotas
     await _loadInitialData();
+    _processarArgumentos();
   }
 
   Future<void> _loadInitialData() async {
@@ -47,6 +48,7 @@ class MapController extends GetxController {
   }
 
   // --- Métodos de Carregamento de Dados ---
+  //carrega todos os pontos
 
   Future<void> loadPontos() async {
     try {
@@ -331,21 +333,36 @@ class MapController extends GetxController {
     update();
   }
 
-  void _processarArgumentos() {
-    final args = Get.arguments as Map<String, dynamic>?;
-    if (args != null && args.containsKey('editarPontoId')) {
-      final pontoId = args['editarPontoId'] as int;
-      final ponto = pontos.firstWhereOrNull((p) => p.id == pontoId);
-
-      if (ponto != null) {
+  Future<void> loadPonto(int pontoId) async {
+    try {
+      isLoading.value = true;
+      final data = await DatabaseHelper().getPonto(pontoId);
+      if (data != null) {
+        final ponto = Ponto.fromMap(data);
+        pontos.assignAll([ponto]); // Use assignAll para substituir a lista
         addMarker(
           LatLng(ponto.nuLatitude, ponto.nuLongitude),
           markerId: 'ponto_${ponto.id}',
           ponto: ponto,
         );
-        selectedPontoId.value = 'ponto_${ponto.id}';
-      } else {
-        _showErrorSnackbar('Ponto não encontrado');
+      }
+    } catch (e) {
+      Get.snackbar('Erro', 'Falha ao carregar ponto: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void _processarArgumentos() async {
+    final args = Get.arguments as Map<String, dynamic>?;
+    if (args != null && args.containsKey('editarPontoId')) {
+      final pontoId = args['editarPontoId'] as int;
+      await loadPonto(pontoId);
+      selectedPontoId.value = 'ponto_$pontoId';
+      if (pontos.isNotEmpty) {
+        focusOnCoordinate(
+          LatLng(pontos.first.nuLatitude, pontos.first.nuLongitude),
+        );
       }
     }
   }

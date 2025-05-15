@@ -59,6 +59,10 @@ class DatabaseHelper {
         FOREIGN KEY (id_usuario) REFERENCES ${globals.cTabUsuario}(id)
       )
     ''');
+    await db.execute(''' 
+      no_parametro TEXT PRIMARY KEY NOT NULL,
+      vl_parametro TEXT NOT NULL,
+    ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -122,9 +126,61 @@ class DatabaseHelper {
     return await db.insert(globals.cTabPonto, ponto);
   }
 
+  // Método para verificar se o parametro existe
+  // Se existir atualiza o valor, se não existir insere o novo
+  Future<int> fnAddParametro(String pNoParametro, String pVlParametro) async {
+    final db = await database;
+    final result = await db.query(
+      globals.cTabParametro,
+      where: 'no_parametro = ?',
+      whereArgs: [pNoParametro],
+    );
+    if (result.isNotEmpty) {
+      return await db.update(
+        globals.cTabParametro,
+        {'no_parametro': pNoParametro, 'vl_parametro': pVlParametro},
+        where: 'no_parametro = ?',
+        whereArgs: [pNoParametro],
+      );
+    } else {
+      return await db.insert(globals.cTabParametro, {
+        'no_parametro': pNoParametro,
+        'vl_parametro': pVlParametro,
+      });
+    }
+  }
+
+  // Métordo para retornar parametro
+  // Retorna o valor do parametro, se não existir retorna o valor padrão
+  Future<String> fnRetParametro(String pNoParametro, String pDefault) async {
+    final db = await database;
+    final ret = await db.query(
+      globals.cTabParametro,
+      where: 'no_parametro = pNoParametro',
+      whereArgs: [pNoParametro],
+    );
+    if (ret.isNotEmpty) {
+      return ret[0]['vl_parametro'] as String;
+    } else {
+      return pDefault;
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getPontos() async {
     final db = await database;
     return await db.query(globals.cTabPonto);
+  }
+
+  // Método para retornar apenas um ponto de um usuário
+  Future<Map<String, dynamic>?> getPonto(int id) async {
+    final db = await database;
+    final results = await db.query(
+      globals.cTabPonto,
+      where: 'id_ponto = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    return results.isNotEmpty ? results.first : null;
   }
 
   Future<int> updatePonto(int id, Map<String, dynamic> ponto) async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // Tela de Configurações
 class SettingsScreen extends StatefulWidget {
@@ -22,7 +23,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _saveSettings() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      // Simule uma validação da URL (implemente sua lógica de API aqui)
+      // Simular salvamento ****LÓGICA AQUI****
+
       await Future.delayed(const Duration(seconds: 1));
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -85,6 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             children: [
                               TextFormField(
                                 controller: _urlController,
+
                                 decoration: const InputDecoration(
                                   labelText: 'URL Base',
                                   hintText: 'Ex: https://api.ieducar.com',
@@ -94,6 +97,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   ),
                                   border: OutlineInputBorder(),
                                 ),
+                                inputFormatters: [
+                                  TextInputFormatter.withFunction((
+                                    oldValue,
+                                    newValue,
+                                  ) {
+                                    return newValue.copyWith(
+                                      text: newValue.text.toLowerCase(),
+                                    );
+                                  }),
+                                ],
+
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Insira a URL base';
