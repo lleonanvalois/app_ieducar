@@ -20,6 +20,7 @@ class MapController extends GetxController {
 
   final RxString selectedPontoId = ''.obs;
   final RxString tempMarkerId = ''.obs;
+  final Rx<MapType> mapType = MapType.normal.obs;
 
   GoogleMapController? mapController;
   late List<LatLng> originalRouteCoordinates;
@@ -353,11 +354,80 @@ class MapController extends GetxController {
     Get.snackbar('Erro', message);
   }
 
-  // --- Limpeza ---
+  void showMapType() {
+    Get.bottomSheet(
+      Container(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Obx(
+            () => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Selecionar Tipo de Mapa',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                RadioListTile<MapType>(
+                  title: const Text('Normal'),
+                  value: MapType.normal,
+                  groupValue: mapType.value,
+                  onChanged: (MapType? value) {
+                    if (value != null) {
+                      mapType.value = value;
+                      Get.back(); // Fecha o BottomSheet
+                    }
+                  },
+                ),
+                RadioListTile<MapType>(
+                  title: const Text('Satélite'),
+                  value: MapType.satellite,
+                  groupValue: mapType.value,
+                  onChanged: (MapType? value) {
+                    if (value != null) {
+                      mapType.value = value;
+                      Get.back();
+                    }
+                  },
+                ),
+                RadioListTile<MapType>(
+                  title: const Text('Híbrido'),
+                  value: MapType.hybrid,
+                  groupValue: mapType.value,
+                  onChanged: (MapType? value) {
+                    if (value != null) {
+                      mapType.value = value;
+                      Get.back();
+                    }
+                  },
+                ),
+                RadioListTile<MapType>(
+                  title: const Text('Terreno'),
+                  value: MapType.terrain,
+                  groupValue: mapType.value,
+                  onChanged: (MapType? value) {
+                    if (value != null) {
+                      mapType.value = value;
+                      Get.back();
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+    );
 
-  @override
-  void onClose() {
-    mapController?.dispose();
-    super.onClose();
+    // --- Limpeza ---
+
+    @override
+    void onClose() {
+      mapController?.dispose();
+      super.onClose();
+    }
   }
 }

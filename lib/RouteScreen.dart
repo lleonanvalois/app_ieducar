@@ -34,6 +34,7 @@ class RouteScreen extends GetView<MapController> {
           ),
         ],
       ),
+
       body: Obx(
         () => Stack(
           children: [
@@ -48,6 +49,7 @@ class RouteScreen extends GetView<MapController> {
                         : const LatLng(-23.5505, -46.6333),
                 zoom: 12,
               ),
+              mapType: controller.mapType.value,
               polylines: controller.polylines,
               markers: controller.markers.toSet(),
               onMapCreated: (GoogleMapController googleMapController) {
@@ -64,26 +66,19 @@ class RouteScreen extends GetView<MapController> {
                 }
               },
 
-              // onTap:
-              //     controller.isEditing.value
-              //         ? (position) {
-              //           // Remove marcadores temporários antes de adicionar
-              //           controller.markers.removeWhere(
-              //             (m) => m.markerId.value.startsWith('temp_ponto'),
-              //           );
-              //           controller.addMarker(
-              //             position,
-              //             markerId: 'temp_ponto', // ID fixo para rascunho
-              //           );
-              //         }
-              //         : null,
               myLocationEnabled: true,
             ),
 
             if (controller.isLoading.value)
               const Center(child: CircularProgressIndicator()),
-            // if (controller.coordenadas.isEmpty && !controller.isLoading.value)
-            //   const Center(child: Text('Nenhuma rota registrada')),
+            Positioned(
+              top: 16.0,
+              left: 16.0,
+              child: FloatingActionButton(
+                onPressed: controller.showMapType,
+                child: const Icon(Icons.map),
+              ),
+            ),
           ],
         ),
       ),
