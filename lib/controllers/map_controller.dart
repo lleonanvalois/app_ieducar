@@ -2,6 +2,7 @@ import 'package:app_ieducar/PontoScreen.dart';
 import 'package:app_ieducar/database/db.dart';
 import 'package:app_ieducar/models/coordenada.dart';
 import 'package:app_ieducar/models/ponto.dart';
+import 'package:app_ieducar/models/rota.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,6 +14,7 @@ class MapController extends GetxController {
   final RxSet<Polyline> polylines = <Polyline>{}.obs;
   final RxSet<Marker> markers = <Marker>{}.obs;
   final RxList<Ponto> pontos = <Ponto>[].obs;
+  final RxList<Rota> rotas = <Rota>[].obs;
 
   final RxBool isLoading = true.obs;
   final RxBool isEditing = false.obs;
@@ -39,7 +41,10 @@ class MapController extends GetxController {
   Future<void> _loadInitialData() async {
     try {
       isLoading.value = true;
-      await loadPontos();
+      final args = Get.arguments as Map<String, dynamic>?;
+      if (args == null || !args.containsKey('editarPontoId')) {
+        await loadPontos();
+      }
       await loadRoute();
       _processarArgumentos();
     } finally {
@@ -64,7 +69,7 @@ class MapController extends GetxController {
     try {
       final data = await DatabaseHelper().getRotas();
       coordenadas.assignAll(data.map((e) => Coordenada.fromMap(e)));
-      _createRoute();
+      _createPoints();
     } catch (e) {
       _showErrorSnackbar('Falha ao carregar rotas: ${e.toString()}');
     }
@@ -90,7 +95,7 @@ class MapController extends GetxController {
     originalMarkerPositions[markerId] = position;
   }
 
-  void _createRoute() {
+  void _createPoints() {
     polylines.clear();
 
     if (coordenadas.length > 1) {
@@ -329,7 +334,7 @@ class MapController extends GetxController {
   }
 
   void refreshMap() {
-    _createRoute();
+    _createPoints();
     update();
   }
 
@@ -353,20 +358,26 @@ class MapController extends GetxController {
     }
   }
 
-  void _processarArgumentos() async {
+  void _processarArgumentos() {
     final args = Get.arguments as Map<String, dynamic>?;
     if (args != null && args.containsKey('editarPontoId')) {
-      final pontoId = args['editarPontoId'] as int;
-      await loadPonto(pontoId);
-      selectedPontoId.value = 'ponto_$pontoId';
-      if (pontos.isNotEmpty) {
-        focusOnCoordinate(
-          LatLng(pontos.first.nuLatitude, pontos.first.nuLongitude),
-        );
-      }
+      final markerId = args['editarPontoId'] as int;
+      final lat = args['latitude'] as double;
+      final lng = args['longitude'] as double;
+      final position = LatLng(lat, lng);
+      addMarker(position, markerId: 'ponto_$markerId');
+      markers.assignAll(
+        markers
+            .where((marker) => marker.markerId.value == 'ponto_$markerId')
+            .toList(),
+      );
+      focusOnCoordinate(position);
     }
   }
 
+  Future<void> criarRotas() async {
+    // ******************** Lógica para criar rotas ********************
+  }
   void _showErrorSnackbar(String message) {
     Get.snackbar('Erro', message);
   }

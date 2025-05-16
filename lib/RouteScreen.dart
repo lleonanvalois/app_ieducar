@@ -1,87 +1,131 @@
+import 'package:app_ieducar/models/ponto.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:app_ieducar/controllers/map_controller.dart';
+import 'package:app_ieducar/models/rota.dart';
 
-class RouteScreen extends GetView<MapController> {
-  const RouteScreen({super.key});
+class RouteScreen extends StatelessWidget {
+  final MapController mapController = Get.find();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mapa'),
-        actions: [
-          Obx(
-            () =>
-                controller.isEditing.value
-                    ? Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.save),
-                          onPressed: controller.confirmAndSave,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.cancel),
-                          onPressed: controller.exitEditMode,
-                        ),
-                      ],
-                    )
-                    : IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: controller.enterEditMode,
-                    ),
-          ),
-        ],
+      appBar: AppBar(title: const Text('Rotas')),
+      body: Obx(() {
+        if (mapController.rotas.isEmpty) {
+          return const Center(child: Text('Nenhuma rota encontrada.'));
+        } else {
+          return ListView.builder(
+            itemCount: mapController.rotas.length,
+            itemBuilder: (context, index) {
+              final rota = mapController.rotas[index];
+              return Card(
+                margin: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  title: Text(''),
+                  subtitle: Text('Pontos: ${rota.pontos.length}'),
+                  onTap: () {
+                    Get.toNamed(
+                      '/mapa',
+                      arguments: {
+                        'rota': rota, // Passa a rota selecionada como argumento
+                      },
+                    );
+                  },
+                ),
+              );
+            },
+          );
+        }
+      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showCreateRouteDialog(context);
+        },
+        child: const Icon(Icons.add),
       ),
+    );
+  }
 
-      body: Obx(
-        () => Stack(
-          children: [
-            GoogleMap(
-              initialCameraPosition: CameraPosition(
-                target:
-                    controller.coordenadas.isNotEmpty
-                        ? LatLng(
-                          controller.coordenadas.first.latitude,
-                          controller.coordenadas.first.longitude,
-                        )
-                        : const LatLng(-23.5505, -46.6333),
-                zoom: 12,
-              ),
-              mapType: controller.mapType.value,
-              polylines: controller.polylines,
-              markers: controller.markers.toSet(),
-              onMapCreated: (GoogleMapController googleMapController) {
-                controller.mapController = googleMapController;
+  void _showCreateRouteDialog(BuildContext context) {
+    String nomeRota = '';
+    List<Ponto> pontosSelecionados = [];
 
-                final args = Get.arguments as Map<String, dynamic>?;
-                if (args != null && args.containsKey('editarPontoId')) {
-                  final markerId = args['editarPontoId'] as int;
-                  final lat = args['latitude'] as double;
-                  final lng = args['longitude'] as double;
-                  final position = LatLng(lat, lng);
-                  controller.addMarker(position, markerId: 'ponto_$markerId');
-                  controller.focusOnCoordinate(position);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Criar Nova Rota'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'Nome da Rota',
+                      ),
+                      onChanged: (value) {
+                        nomeRota = value;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 300,
+                      width: double.maxFinite,
+                      child: ListView.builder(
+                        itemCount: mapController.pontos.length,
+                        itemBuilder: (context, index) {
+                          final ponto = mapController.pontos[index];
+                          return CheckboxListTile(
+                            title: Text(ponto.noPonto),
+                            value: pontosSelecionados.contains(ponto),
+                            onChanged: (bool? value) {
+                              if (value != null) {
+                                setState(() {
+                                  if (value) {
+                                    pontosSelecionados.add(ponto);
+                                  } else {
+                                    pontosSelecionados.remove(ponto);
+                                  }
+                                });
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (nomeRota.isNotEmpty && pontosSelecionados.isNotEmpty) {
+                  mapController.criarRotas();
+                  Navigator.of(context).pop();
+                } else {
+                  Get.snackbar(
+                    'Atenção',
+                    'Preencha o nome e selecione os pontos.',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
                 }
               },
-
-              myLocationEnabled: true,
-            ),
-
-            if (controller.isLoading.value)
-              const Center(child: CircularProgressIndicator()),
-            Positioned(
-              top: 16.0,
-              left: 16.0,
-              child: FloatingActionButton(
-                onPressed: controller.showMapType,
-                child: const Icon(Icons.map),
-              ),
+              child: const Text('Criar'),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 }

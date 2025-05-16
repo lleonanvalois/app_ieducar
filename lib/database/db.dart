@@ -49,6 +49,8 @@ class DatabaseHelper {
        FOREIGN KEY (id_usuario) REFERENCES ${globals.cTabUsuario}(id)
       )
     ''');
+
+    // Criação da tabela de coordenadas
     await db.execute('''
       CREATE TABLE ${globals.cTabCoordenada}(
         id_coordenada INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,10 +61,25 @@ class DatabaseHelper {
         FOREIGN KEY (id_usuario) REFERENCES ${globals.cTabUsuario}(id)
       )
     ''');
-    await db.execute(''' 
-      no_parametro TEXT PRIMARY KEY NOT NULL,
-      vl_parametro TEXT NOT NULL,
+
+    // Criação da tabela de parâmetros
+    await db.execute('''
+      CREATE TABLE ${globals.cTabParametro}( 
+        no_parametro TEXT PRIMARY KEY NOT NULL,
+        vl_parametro TEXT NOT NULL,)
+    
     ''');
+
+    // Criação da tabela de rotas
+    await db.execute('''
+      CREATE TABLE ${globals.cTabRota}(
+      id_rota INTEGER 
+      nu_ano INTEGER NOT NULL,
+      cd_rota INTEGER NOT NULL,
+      ds_rota TEXT NOT NULL,
+      ds_destino TEXT NOT NULL,
+      )
+ ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

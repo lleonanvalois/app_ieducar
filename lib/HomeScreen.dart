@@ -1,3 +1,4 @@
+import 'package:app_ieducar/RouteScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'PontoScreen.dart';
@@ -14,6 +15,10 @@ class HomeScreen extends StatelessWidget {
 
   void _sincronizar() {
     // Ação de sincronização
+  }
+
+  void _rotas() {
+    Get.to(() => RouteScreen());
   }
 
   Future<bool> _onWillPop(BuildContext context) async {
@@ -85,7 +90,7 @@ class HomeScreen extends StatelessWidget {
                     label: "Rotas",
                     iconColor: Colors.white,
                     textColor: Colors.white,
-                    onPressed: () => Get.toNamed('/mapa'),
+                    onPressed: () => Get.toNamed('/routas'),
                   ),
                   const SizedBox(width: 20),
 
