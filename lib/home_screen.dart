@@ -1,7 +1,7 @@
-import 'package:app_ieducar/RouteScreen.dart';
+import 'package:app_ieducar/route_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'PontoScreen.dart';
+import 'ponto_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -90,7 +90,7 @@ class HomeScreen extends StatelessWidget {
                     label: "Rotas",
                     iconColor: Colors.white,
                     textColor: Colors.white,
-                    onPressed: () => Get.toNamed('/routas'),
+                    onPressed: () => Get.toNamed('/rotas'),
                   ),
                   const SizedBox(width: 20),
 

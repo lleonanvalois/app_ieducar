@@ -28,7 +28,6 @@ class _PontoFormState extends State<PontoForm> {
 
     if (widget.ponto != null) {
       _nomeController.text = widget.ponto!.noPonto;
-      _descricaoController.text = widget.ponto!.dsPonto;
       _latController.text = widget.ponto!.nuLatitude.toStringAsFixed(4);
       _longController.text = widget.ponto!.nuLongitude.toStringAsFixed(4);
     } else {
@@ -202,7 +201,6 @@ class _PontoFormState extends State<PontoForm> {
       final novoPonto = Ponto(
         id: widget.ponto?.id,
         noPonto: _nomeController.text,
-        dsPonto: _descricaoController.text,
         nuLatitude: double.parse(_latController.text),
         nuLongitude: double.parse(_longController.text),
         dhPonto: DateTime.now().toIso8601String(),

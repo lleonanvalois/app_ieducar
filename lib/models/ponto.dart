@@ -1,7 +1,6 @@
 class Ponto {
   final int? id;
-  final String noPonto; // Nome do ponto
-  final String dsPonto; // Descrição
+  final String noPonto; // Nome do pont
   final double nuLatitude;
   final double nuLongitude;
   final String dhPonto; // Data/hora
@@ -9,7 +8,6 @@ class Ponto {
   Ponto({
     this.id,
     required this.noPonto,
-    required this.dsPonto,
     required this.nuLatitude,
     required this.nuLongitude,
     required this.dhPonto,
@@ -20,7 +18,6 @@ class Ponto {
     return {
       'id_ponto': id,
       'no_ponto': noPonto,
-      'ds_ponto': dsPonto,
       'nu_latitude': nuLatitude,
       'nu_longitude': nuLongitude,
       'dh_ponto': dhPonto,
@@ -31,7 +28,6 @@ class Ponto {
     return Ponto(
       id: map['id_ponto'],
       noPonto: map['no_ponto'],
-      dsPonto: map['ds_ponto'],
       nuLatitude: map['nu_latitude'],
       nuLongitude: map['nu_longitude'],
       dhPonto: map['dh_ponto'],

@@ -1,4 +1,4 @@
-import 'package:app_ieducar/HomeScreen.dart';
+import 'package:app_ieducar/home_screen.dart';
 import 'package:app_ieducar/database/db.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

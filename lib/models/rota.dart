@@ -1,23 +1,27 @@
+import 'ponto.dart';
+
 class Rota {
   final int idRota;
-  final String dhRota;
-  final int cdRota;
+  final String nuAno;
+  final String noRota;
   final String dsRota;
   final String dsDestino;
+  List<Ponto> pontos;
 
   Rota({
     required this.idRota,
-    required this.dhRota,
-    required this.cdRota,
+    required this.nuAno,
+    required this.noRota,
     required this.dsRota,
     required this.dsDestino,
+    this.pontos = const [],
   });
   // Mapeamento para o banco de dados
   Map<String, dynamic> toMap() {
     return {
       'id_rota': idRota,
-      'dh_rota': dhRota,
-      'cd_rota': cdRota,
+      'nu_ano': nuAno,
+      'no_rota': noRota,
       'ds_rota': dsRota,
       'ds_destino': dsDestino,
     };

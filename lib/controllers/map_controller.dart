@@ -1,4 +1,4 @@
-import 'package:app_ieducar/PontoScreen.dart';
+import 'package:app_ieducar/ponto_screen.dart';
 import 'package:app_ieducar/database/db.dart';
 import 'package:app_ieducar/models/coordenada.dart';
 import 'package:app_ieducar/models/ponto.dart';

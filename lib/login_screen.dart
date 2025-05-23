@@ -1,7 +1,7 @@
 import 'package:app_ieducar/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'SettingsScreen.dart';
+import 'settings_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});

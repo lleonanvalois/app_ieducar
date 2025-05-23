@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:app_ieducar/globals.dart' as globals;
@@ -41,10 +43,9 @@ class DatabaseHelper {
       CREATE TABLE ${globals.cTabPonto} (
        id_ponto INTEGER PRIMARY KEY AUTOINCREMENT,
        no_ponto TEXT NOT NULL,
-       ds_ponto TEXT NOT NULL,
        nu_latitude REAL NOT NULL,
        nu_longitude REAL NOT NULL,
-       dh_ponto TEXT NOT NULL,
+       dh_ponto TEXT,
        id_usuario INTEGER,
        FOREIGN KEY (id_usuario) REFERENCES ${globals.cTabUsuario}(id)
       )
@@ -66,20 +67,38 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE ${globals.cTabParametro}( 
         no_parametro TEXT PRIMARY KEY NOT NULL,
-        vl_parametro TEXT NOT NULL,)
+        vl_parametro TEXT NOT NULL)
     
     ''');
 
     // Criação da tabela de rotas
     await db.execute('''
       CREATE TABLE ${globals.cTabRota}(
-      id_rota INTEGER 
+      id_rota INTEGER PRIMARY KEY,
       nu_ano INTEGER NOT NULL,
-      cd_rota INTEGER NOT NULL,
-      ds_rota TEXT NOT NULL,
-      ds_destino TEXT NOT NULL,
+      no_rota INTEGER NOT NULL,
+      id_destino INTEGER,
+      no_destino INTEGER,
+      ds_rota_tipo TEXT,
+      is_transportadora INTEGER,
+      no_transportadora TEXT,
+      is_terceirizado TEXT
       )
  ''');
+
+    // Criação da tabela rota ponto
+    await db.execute('''
+      CREATE TABLE ${globals.ctabRotaPonto}(
+      id_itinerario INTEGER PRIMARY KEY,
+      id_rota INTEGER,
+      id_ponto INTEGER,
+      nu_sequencia INTEGER,
+      hr_ponto TEXT NOT NULL,
+      ds_rota_tipo TEXT NOT NULL,
+      FOREIGN KEY (id_rota) REFERENCES ${globals.cTabRota}(id_rota),
+      FOREIGN KEY (id_ponto) REFERENCES ${globals.cTabPonto}(id_ponto)
+      )
+       ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -143,6 +162,18 @@ class DatabaseHelper {
     return await db.insert(globals.cTabPonto, ponto);
   }
 
+  //Métodos para inserir rotas
+  Future<int> insertRota(Map<String, dynamic> rota) async {
+    final db = await database;
+    return await db.insert(globals.cTabRota, rota);
+  }
+
+  // Método para inserir rota_ponto
+  Future<int> insertRotaPonto(Map<String, dynamic> rotaPonto) async {
+    final db = await database;
+    return await db.insert(globals.ctabRotaPonto, rotaPonto);
+  }
+
   // Método para verificar se o parametro existe
   // Se existir atualiza o valor, se não existir insere o novo
   Future<int> fnAddParametro(String pNoParametro, String pVlParametro) async {
@@ -173,7 +204,7 @@ class DatabaseHelper {
     final db = await database;
     final ret = await db.query(
       globals.cTabParametro,
-      where: 'no_parametro = pNoParametro',
+      where: 'no_parametro = ?',
       whereArgs: [pNoParametro],
     );
     if (ret.isNotEmpty) {

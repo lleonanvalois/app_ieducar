@@ -2,10 +2,11 @@ import 'package:app_ieducar/models/ponto.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:app_ieducar/controllers/map_controller.dart';
-import 'package:app_ieducar/models/rota.dart';
 
 class RouteScreen extends StatelessWidget {
-  final MapController mapController = Get.find();
+  final MapController mapController = Get.put(MapController());
+
+  RouteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

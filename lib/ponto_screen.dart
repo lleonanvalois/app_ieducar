@@ -95,7 +95,6 @@ class PontosScreen extends StatelessWidget {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(ponto.dsPonto),
                           Text(
                             'Lat: ${ponto.nuLatitude.toStringAsFixed(4)}, '
                             'Long: ${ponto.nuLongitude.toStringAsFixed(4)}',

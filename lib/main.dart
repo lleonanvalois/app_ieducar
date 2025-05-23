@@ -1,10 +1,10 @@
-import 'package:app_ieducar/PontoScreen.dart';
-import 'package:app_ieducar/MapScreen.dart';
-import 'package:app_ieducar/RouteScreen.dart';
+import 'package:app_ieducar/ponto_screen.dart';
+import 'package:app_ieducar/map_screen.dart';
+import 'package:app_ieducar/route_screen.dart';
 import 'package:app_ieducar/controllers/map_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'LoginScreen.dart';
+import 'login_screen.dart';
 import 'database/db.dart';
 
 void main() async {
